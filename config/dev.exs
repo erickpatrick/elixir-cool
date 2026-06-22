@@ -3,9 +3,9 @@ import Config
 # Configure your database
 config :coox, Coox.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "",
   hostname: "localhost",
-  database: "coox_dev",
+  database: "postgres",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
