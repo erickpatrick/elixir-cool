@@ -26,6 +26,15 @@ defmodule CooxWeb.RecipeLive.Form do
               <figcaption class="text-center text-sm text-gray-700 mt-2">
                 {entry.client_name}
               </figcaption>
+              <button
+                aria-label="cancel"
+                class="absolute top-1 right-2"
+                phx-click="cancel-upload"
+                phx-value-ref={entry.ref}
+                type="button"
+              >
+                &times;
+              </button>
             </div>
           </figure>
 
@@ -83,6 +92,10 @@ defmodule CooxWeb.RecipeLive.Form do
   def handle_event("validate", %{"recipe" => recipe_params}, socket) do
     changeset = Recipes.change_recipe(socket.assigns.recipe, recipe_params)
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+  end
+
+  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :image, ref)}
   end
 
   @uploads_dir Path.join([:code.priv_dir(:coox), "static", "uploads"])
