@@ -10,6 +10,18 @@ defmodule CooxWeb.RecipeLive.Form do
       <.header>{@page_title}</.header>
 
       <.form for={@form} id="recipe-form" phx-change="validate" phx-submit="save">
+        <fieldset class="fieldset">
+          <label class="label">Image</label>
+          <figure :for={entry <- @uploads.image.entries} class="flex justify-around">
+            <div class="relative">
+              <.live_img_preview entry={entry} class="rounded mx-h-64 shadow" />
+              <figcaption class="text-center text-sm text-gray-700 mt-2">
+                {entry.client_name}
+              </figcaption>
+            </div>
+          </figure>
+          <.live_file_input upload={@uploads.image} class="file-input" />
+        </fieldset>
         <.input field={@form[:name]} type="text" label="Name" phx-debounce />
         <.input
           field={@form[:description]}
@@ -33,6 +45,11 @@ defmodule CooxWeb.RecipeLive.Form do
   def mount(params, _session, socket) do
     {:ok,
      socket
+     |> allow_upload(:image,
+       accept: ~w(.png .jpg .jpeg),
+       max_entries: 1,
+       max_file_size: 2 * 1024 * 1024
+     )
      |> apply_action(socket.assigns.live_action, params)}
   end
 
@@ -59,9 +76,24 @@ defmodule CooxWeb.RecipeLive.Form do
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
+  @uploads_dir Path.join([:code.priv_dir(:coox), "static", "uploads"])
+
   def handle_event("save", %{"recipe" => recipe_params}, socket) do
     case save_recipe(socket, socket.assigns.live_action, recipe_params) do
       {:ok, recipe} ->
+        image_path =
+          socket
+          |> consume_uploaded_entries(:image, fn %{path: path}, _entry ->
+            dest = Path.join(@uploads_dir, Path.basename(path))
+            File.cp!(path, dest)
+            {:ok, Path.basename(dest)}
+          end)
+          |> List.first()
+
+        if image_path do
+          Recipes.update_recipe_image_path!(socket.assigns.current_scope, recipe, image_path)
+        end
+
         flash_msg =
           case socket.assigns.live_action do
             :new -> "Recipe created successfully"
