@@ -12,6 +12,14 @@ defmodule CooxWeb.RecipeLive.Form do
       <.form for={@form} id="recipe-form" phx-change="validate" phx-submit="save">
         <fieldset class="fieldset">
           <label class="label">Image</label>
+
+          <div
+            :if={@recipe.image_path && Enum.empty?(@uploads.image.entries)}
+            class="mb-6 flex justify-center"
+          >
+            <img src={~p"/uploads/#{@recipe.image_path}"} alt="Recipe image" class="w-1/2 h-auto" />
+          </div>
+
           <figure :for={entry <- @uploads.image.entries} class="flex justify-around">
             <div class="relative">
               <.live_img_preview entry={entry} class="rounded mx-h-64 shadow" />
@@ -20,6 +28,7 @@ defmodule CooxWeb.RecipeLive.Form do
               </figcaption>
             </div>
           </figure>
+
           <.live_file_input upload={@uploads.image} class="file-input" />
         </fieldset>
         <.input field={@form[:name]} type="text" label="Name" phx-debounce />
