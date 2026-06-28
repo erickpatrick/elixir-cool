@@ -38,7 +38,23 @@ defmodule CooxWeb.RecipeLive.Form do
             </div>
           </figure>
 
-          <.live_file_input upload={@uploads.image} class="file-input" />
+          <.live_file_input upload={@uploads.image} class="hidden" />
+
+          <label
+            class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 mt-2"
+            for={@uploads.image.ref}
+            phx-drop-target={@uploads.image.ref}
+          >
+            <div class="flex flex-col items-center justify-center pt-6 pb-6">
+              <.icon name="hero-arrow-up-tray" class="w-8 h-8 mb-4 text-gray-500" />
+              <p class="mb-2 text-sm text-gray-500">
+                <span class="font-semibold">Click to upload</span> or drag and drop
+              </p>
+              <p class="text-xs text-gray-500">
+                PNG or JPG (Max. 2Mb)
+              </p>
+            </div>
+          </label>
         </fieldset>
         <.input field={@form[:name]} type="text" label="Name" phx-debounce />
         <.input
