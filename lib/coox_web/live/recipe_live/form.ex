@@ -93,6 +93,16 @@ defmodule CooxWeb.RecipeLive.Form do
               </div>
             </.inputs_for>
           </div>
+
+          <button
+            class="mt-4 text-zinc-700"
+            name="recipe[instructions_sort][]"
+            phx-click={JS.dispatch("change")}
+            type="button"
+            value="-1"
+          >
+            <.icon name="hero-plus-circle" class="h-5 w-5 relative top-[-1px]" /> add more
+          </button>
         </div>
 
         <div class="flex">
